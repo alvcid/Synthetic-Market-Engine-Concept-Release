@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 Álvaro Rodríguez Ilárraz
+Copyright (c) 2024 TradeAndRoll
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+**IMPORTANT NOTICE:**
+
+This repository contains conceptual components, architecture documentation, and 
+pseudocode only. The full implementation, proprietary algorithms, heuristics, 
+and formulas are NOT included and remain the exclusive property of TradeAndRoll.
+
+Any use of the concepts presented here for commercial purposes may be subject 
+to additional licensing agreements.
+
