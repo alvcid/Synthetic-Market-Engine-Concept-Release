@@ -1,168 +1,168 @@
-# Arquitectura del Sistema - Pipeline MLdP
+# System Architecture - MLdP Pipeline
 
-## Visión General
+## Overview
 
-Este documento describe la arquitectura conceptual del pipeline completo de Machine Learning de Producción (MLdP) implementado en el Synthetic Market Engine.
-
----
-
-## Pipeline de Procesamiento
-
-### Etapa 1: Ingestión y Validación
-
-**Qué hace:**
-- Recibe archivos CSV con datos históricos OHLCV
-- Valida estructura y formato de columnas
-- Normaliza nombres de columnas (soporta múltiples variantes)
-- Limpia datos inválidos o faltantes
-
-**Componentes:**
-- Módulo de parsing flexible
-- Normalizador de columnas
-- Validador de integridad
-
-**Salida:** DataFrame normalizado y validado
+This document describes the conceptual architecture of the complete Production Machine Learning (MLdP) pipeline implemented in the Synthetic Market Engine.
 
 ---
 
-### Etapa 2: Preprocesamiento y Análisis
+## Processing Pipeline
 
-**Qué hace:**
-- Convierte precios a log-returns (estacionariedad)
-- Extrae ratios relativos OHLC (preservación de estructura de velas)
-- Calcula métricas estadísticas base del dataset original
-- Determina parámetros óptimos (block size) según longitud de datos
+### Stage 1: Ingestion and Validation
 
-**Componentes:**
-- Transformador de precios a returns
-- Extractor de ratios OHLC
-- Calculador de métricas base
-- Optimizador de parámetros
+**What it does:**
+- Receives CSV files with historical OHLCV data
+- Validates structure and column format
+- Normalizes column names (supports multiple variants)
+- Cleans invalid or missing data
 
-**Salida:** Estructuras preprocesadas + métricas de referencia + configuración
+**Components:**
+- Flexible parsing module
+- Column normalizer
+- Integrity validator
 
----
-
-### Etapa 3: Generación de Candidatos
-
-**Qué hace:**
-- Aplica Hybrid Block Bootstrap para crear series sintéticas
-- Muestrea bloques contiguos aleatorios de los datos originales
-- Ensambla bloques en nuevas series temporales
-- Reconstruye paths de precio y estructura OHLCV completa
-
-**Componentes:**
-- Motor de sampling de bloques
-- Ensamblador de series
-- Reconstructor de OHLCV
-
-**Salida:** Series candidatas sintéticas
+**Output:** Normalized and validated DataFrame
 
 ---
 
-### Etapa 4: Validación Estadística
+### Stage 2: Preprocessing and Analysis
 
-**Qué hace:**
-- Calcula 15+ métricas estadísticas para cada candidato
-- Compara métricas con las del dataset original
-- Calcula score de fidelidad mediante comparación ponderada
-- Evalúa si el candidato cumple umbral mínimo
+**What it does:**
+- Converts prices to log-returns (stationarity)
+- Extracts relative OHLC ratios (candle structure preservation)
+- Calculates base statistical metrics of original dataset
+- Determines optimal parameters (block size) according to data length
 
-**Métricas calculadas:**
-- Momentos: media, volatilidad, skewness, kurtosis
-- Estructura temporal: ACF, Ljung-Box, Hurst
-- Volatilidad: clustering, ARCH effects, persistencia
-- Coherencia: correlaciones retorno-volumen, RSI, leverage effect
+**Components:**
+- Price to returns transformer
+- OHLC ratio extractor
+- Base metrics calculator
+- Parameter optimizer
 
-**Componentes:**
-- Calculador de métricas estadísticas
-- Comparador ponderado
-- Evaluador de umbrales
-
-**Salida:** Score de fidelidad (0-100%) + decisión (aceptar/rechazar)
+**Output:** Preprocessed structures + reference metrics + configuration
 
 ---
 
-### Etapa 5: Rejection Sampling
+### Stage 3: Candidate Generation
 
-**Qué hace:**
-- Filtra candidatos que no cumplen umbral mínimo
-- Reintenta generación hasta obtener candidatos válidos
-- Limita número máximo de intentos por muestra
-- Acumula muestras válidas hasta alcanzar cantidad solicitada
+**What it does:**
+- Applies Hybrid Block Bootstrap to create synthetic series
+- Samples random contiguous blocks from original data
+- Assembles blocks into new time series
+- Reconstructs price paths and complete OHLCV structure
 
-**Componentes:**
-- Filtro por umbral
-- Controlador de reintentos
-- Acumulador de muestras válidas
+**Components:**
+- Block sampling engine
+- Series assembler
+- OHLCV reconstructor
 
-**Salida:** Lista de N series sintéticas validadas
-
----
-
-### Etapa 6: Post-procesamiento y Exportación
-
-**Qué hace:**
-- Formatea resultados para exportación
-- Genera archivos CSV y Excel individuales
-- Crea archivos ZIP con batches completos
-- Prepara metadatos y reportes de validación
-
-**Componentes:**
-- Formateador de salida
-- Generador de archivos
-- Agregador de batches
-
-**Salida:** Archivos listos para descarga
+**Output:** Synthetic candidate series
 
 ---
 
-## Flujo de Datos Completo
+### Stage 4: Statistical Validation
+
+**What it does:**
+- Calculates 15+ statistical metrics for each candidate
+- Compares metrics with those of original dataset
+- Calculates fidelity score through weighted comparison
+- Evaluates if candidate meets minimum threshold
+
+**Calculated metrics:**
+- Moments: mean, volatility, skewness, kurtosis
+- Temporal structure: ACF, Ljung-Box, Hurst
+- Volatility: clustering, ARCH effects, persistence
+- Coherence: return-volume correlations, RSI, leverage effect
+
+**Components:**
+- Statistical metrics calculator
+- Weighted comparator
+- Threshold evaluator
+
+**Output:** Fidelity score (0-100%) + decision (accept/reject)
+
+---
+
+### Stage 5: Rejection Sampling
+
+**What it does:**
+- Filters candidates that do not meet minimum threshold
+- Retries generation until valid candidates are obtained
+- Limits maximum number of attempts per sample
+- Accumulates valid samples until requested quantity is reached
+
+**Components:**
+- Threshold filter
+- Retry controller
+- Valid sample accumulator
+
+**Output:** List of N validated synthetic series
+
+---
+
+### Stage 6: Post-processing and Export
+
+**What it does:**
+- Formats results for export
+- Generates individual CSV and Excel files
+- Creates ZIP files with complete batches
+- Prepares metadata and validation reports
+
+**Components:**
+- Output formatter
+- File generator
+- Batch aggregator
+
+**Output:** Files ready for download
+
+---
+
+## Complete Data Flow
 
 ```
 [CSV Input]
     │
     ▼
-[Validación y Normalización]
+[Validation and Normalization]
     │
     ▼
-[Preprocesamiento]
+[Preprocessing]
     ├─► Log Returns
-    ├─► Ratios OHLC
-    ├─► Métricas Originales
-    └─► Configuración
+    ├─► OHLC Ratios
+    ├─► Original Metrics
+    └─► Configuration
     │
     ▼
 ┌─────────────────────────────────────┐
-│   LOOP: Generación + Validación    │
+│   LOOP: Generation + Validation    │
 │                                     │
-│   [Generar Candidato]              │
+│   [Generate Candidate]              │
 │         │                           │
 │         ▼                           │
-│   [Calcular Métricas]              │
+│   [Calculate Metrics]              │
 │         │                           │
 │         ▼                           │
-│   [Comparar con Original]          │
+│   [Compare with Original]          │
 │         │                           │
 │         ▼                           │
-│   [Score >= Umbral?]               │
+│   [Score >= Threshold?]            │
 │         │                           │
 │    ┌────┴────┐                     │
 │    │         │                     │
-│   SÍ        NO                     │
+│   YES       NO                     │
 │    │         │                     │
 │    ▼         ▼                     │
-│ [Aceptar] [Rechazar y Reintentar] │
+│ [Accept] [Reject and Retry]        │
 │    │                                │
 │    └─────────┐                      │
 │              │                      │
 └──────────────┼──────────────────────┘
                │
                ▼
-        [N Muestras Válidas]
+        [N Valid Samples]
                │
                ▼
-        [Exportación]
+        [Export]
                │
                ▼
         [CSV/Excel/ZIP]
@@ -170,96 +170,96 @@ Este documento describe la arquitectura conceptual del pipeline completo de Mach
 
 ---
 
-## Componentes del Sistema
+## System Components
 
 ### Backend API (FastAPI)
 
-**Responsabilidades:**
-- Endpoints REST para carga de archivos
-- Gestión de jobs asíncronos
-- Cálculo de métricas en tiempo real
-- Servicio de descarga de resultados
+**Responsibilities:**
+- REST endpoints for file upload
+- Asynchronous job management
+- Real-time metrics calculation
+- Results download service
 
-**Endpoints principales:**
-- `POST /upload` - Carga de CSV
-- `POST /generate` - Inicio de generación
-- `GET /job-status/{job_id}` - Estado de progreso
-- `GET /download/{filename}` - Descarga de resultados
+**Main endpoints:**
+- `POST /upload` - CSV upload
+- `POST /generate` - Generation start
+- `GET /job-status/{job_id}` - Progress status
+- `GET /download/{filename}` - Results download
 
 ---
 
 ### Core Engine (SyntheticDataFactory)
 
-**Responsabilidades:**
-- Orquestación del pipeline completo
-- Gestión de estado interno
-- Coordinación entre módulos
-- Control de calidad
+**Responsibilities:**
+- Complete pipeline orchestration
+- Internal state management
+- Module coordination
+- Quality control
 
-**Métodos principales:**
-- `__init__()` - Inicialización y preprocesamiento
-- `generate()` - Generación con validación
-- `_generate_candidate()` - Creación de candidatos
-- `_calculate_metrics()` - Cálculo de métricas
-- `_calculate_similarity()` - Scoring de fidelidad
+**Main methods:**
+- `__init__()` - Initialization and preprocessing
+- `generate()` - Generation with validation
+- `_generate_candidate()` - Candidate creation
+- `_calculate_metrics()` - Metrics calculation
+- `_calculate_similarity()` - Fidelity scoring
 
 ---
 
 ### Frontend (React)
 
-**Responsabilidades:**
-- Interfaz de usuario para carga de archivos
-- Visualización de datos originales y sintéticos
-- Monitoreo de progreso de generación
-- Descarga de resultados
+**Responsibilities:**
+- User interface for file upload
+- Visualization of original and synthetic data
+- Generation progress monitoring
+- Results download
 
-**Componentes principales:**
-- Dashboard - Interfaz principal
-- Upload Zone - Carga de archivos
-- Visualization - Gráficos de series
-- Progress Tracker - Seguimiento de jobs
-- Metrics Display - Tabla de métricas
-
----
-
-## Consideraciones de Diseño
-
-### Escalabilidad
-
-- Procesamiento asíncrono para no bloquear API
-- Generación progresiva (muestra por muestra)
-- Optimización de memoria para datasets grandes
-
-### Robustez
-
-- Manejo de errores en cada etapa
-- Validación exhaustiva de inputs
-- Fallbacks para casos edge
-
-### Calidad
-
-- Rejection sampling estricto
-- Múltiples métricas de validación
-- Scoring ponderado por importancia
+**Main components:**
+- Dashboard - Main interface
+- Upload Zone - File upload
+- Visualization - Series charts
+- Progress Tracker - Job tracking
+- Metrics Display - Metrics table
 
 ---
 
-## Integración con MLdP
+## Design Considerations
 
-Este pipeline sigue principios de Machine Learning de Producción:
+### Scalability
 
-1. **Versionado de Datos**: Tracking de datasets de entrada
-2. **Validación Automática**: Tests estadísticos integrados
-3. **Monitoreo**: Métricas en tiempo real durante generación
-4. **Reproducibilidad**: Parámetros configurables y documentados
-5. **Escalabilidad**: Diseño para procesamiento en background
+- Asynchronous processing to avoid blocking API
+- Progressive generation (sample by sample)
+- Memory optimization for large datasets
+
+### Robustness
+
+- Error handling at each stage
+- Exhaustive input validation
+- Fallbacks for edge cases
+
+### Quality
+
+- Strict rejection sampling
+- Multiple validation metrics
+- Weighted scoring by importance
 
 ---
 
-## Notas de Implementación
+## MLdP Integration
 
-- El sistema está diseñado para ser modular y extensible
-- Cada etapa puede optimizarse independientemente
-- La validación estadística es configurable por métricas
-- El rejection sampling permite control fino de calidad
+This pipeline follows Production Machine Learning principles:
+
+1. **Data Versioning**: Tracking of input datasets
+2. **Automatic Validation**: Integrated statistical tests
+3. **Monitoring**: Real-time metrics during generation
+4. **Reproducibility**: Configurable and documented parameters
+5. **Scalability**: Design for background processing
+
+---
+
+## Implementation Notes
+
+- The system is designed to be modular and extensible
+- Each stage can be optimized independently
+- Statistical validation is configurable by metrics
+- Rejection sampling allows fine quality control
 

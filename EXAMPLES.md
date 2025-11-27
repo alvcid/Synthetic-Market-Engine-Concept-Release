@@ -1,26 +1,26 @@
-# Ejemplos de Uso - Entrada y Salida
+# Usage Examples - Input and Output
 
-Este documento describe los formatos de entrada y salida del sistema, así como casos de uso típicos.
+This document describes the system's input and output formats, as well as typical use cases.
 
 ---
 
-## Formato de Entrada
+## Input Format
 
-### Requisitos de Datos
+### Data Requirements
 
-El sistema espera archivos CSV con la siguiente estructura mínima:
+The system expects CSV files with the following minimum structure:
 
-**Columnas requeridas:**
-- `Open` - Precio de apertura
-- `High` - Precio máximo
-- `Low` - Precio mínimo  
-- `Close` - Precio de cierre
-- `Volume` - Volumen transaccionado
+**Required columns:**
+- `Open` - Opening price
+- `High` - Maximum price
+- `Low` - Minimum price  
+- `Close` - Closing price
+- `Volume` - Traded volume
 
-**Columnas opcionales:**
-- `Date`, `Time`, `DateTime`, `Timestamp` - Información temporal
+**Optional columns:**
+- `Date`, `Time`, `DateTime`, `Timestamp` - Temporal information
 
-### Ejemplo de CSV de Entrada
+### Input CSV Example
 
 ```csv
 Date,Open,High,Low,Close,Volume
@@ -31,9 +31,9 @@ Date,Open,High,Low,Close,Volume
 2024-01-05,1.2600,1.2650,1.2580,1.2630,1750000
 ```
 
-### Variantes de Nombres Soportadas
+### Supported Name Variants
 
-El sistema normaliza automáticamente nombres de columnas:
+The system automatically normalizes column names:
 
 - **Open**: `Open`, `Op`, `O`, `OPEN`
 - **High**: `High`, `Hi`, `H`, `HIGH`
@@ -43,16 +43,16 @@ El sistema normaliza automáticamente nombres de columnas:
 
 ---
 
-## Formato de Salida
+## Output Format
 
-### Archivos Individuales
+### Individual Files
 
-Por cada serie sintética generada, se crean dos archivos:
+For each generated synthetic series, two files are created:
 
 1. **CSV**: `synthetic_{sample_id}_{batch_id}.csv`
 2. **Excel**: `synthetic_{sample_id}_{batch_id}.xlsx`
 
-**Estructura del CSV de salida:**
+**Output CSV structure:**
 ```csv
 Open,High,Low,Close,Volume
 1.2500,1.2552,1.2478,1.2518,1520000
@@ -61,32 +61,32 @@ Open,High,Low,Close,Volume
 ...
 ```
 
-### Archivos Agregados (ZIP)
+### Aggregated Files (ZIP)
 
-Para facilitar descarga de múltiples series:
+To facilitate download of multiple series:
 
-1. **ZIP CSV**: `synthetic_batch_{batch_id}.zip`
-   - Contiene todos los CSV de la generación
+1. **CSV ZIP**: `synthetic_batch_{batch_id}.zip`
+   - Contains all CSVs from the generation
 
-2. **ZIP Excel**: `synthetic_batch_{batch_id}_xlsx.zip`
-   - Contiene todos los XLSX de la generación
+2. **Excel ZIP**: `synthetic_batch_{batch_id}_xlsx.zip`
+   - Contains all XLSX from the generation
 
 ---
 
-## Ejemplo de Flujo Completo
+## Complete Flow Example
 
-### Escenario: Generación de 5 Series Sintéticas
+### Scenario: Generation of 5 Synthetic Series
 
 **Input:**
-- Archivo: `EURUSD_Daily_2023.csv` (500 barras diarias)
-- Parámetros: `n_samples=5`, `min_fidelity=95%`
+- File: `EURUSD_Daily_2023.csv` (500 daily bars)
+- Parameters: `n_samples=5`, `min_fidelity=95%`
 
-**Proceso:**
-1. Sistema carga y valida CSV
-2. Calcula métricas originales (volatilidad, skewness, etc.)
-3. Genera 5 candidatos con validación
-4. Cada candidato es validado contra métricas originales
-5. Solo se aceptan candidatos con fidelidad ≥ 95%
+**Process:**
+1. System loads and validates CSV
+2. Calculates original metrics (volatility, skewness, etc.)
+3. Generates 5 candidates with validation
+4. Each candidate is validated against original metrics
+5. Only candidates with fidelity ≥ 95% are accepted
 
 **Output:**
 ```
@@ -101,83 +101,83 @@ outputs/
 ├── synthetic_4_batch_abc123.xlsx
 ├── synthetic_5_batch_abc123.csv
 ├── synthetic_5_batch_abc123.xlsx
-├── synthetic_batch_abc123.zip (todos los CSV)
-└── synthetic_batch_abc123_xlsx.zip (todos los XLSX)
+├── synthetic_batch_abc123.zip (all CSVs)
+└── synthetic_batch_abc123_xlsx.zip (all XLSX)
 ```
 
 ---
 
-## Casos de Uso
+## Use Cases
 
-### Caso 1: Stress-Testing de Estrategia
+### Case 1: Strategy Stress-Testing
 
-**Objetivo:** Validar robustez de estrategia de trading
+**Objective:** Validate trading strategy robustness
 
 **Input:**
-- Dataset histórico: 2 años de datos diarios de SPY
-- Generación: 100 series sintéticas
-- Fidelidad mínima: 90%
+- Historical dataset: 2 years of daily SPY data
+- Generation: 100 synthetic series
+- Minimum fidelity: 90%
 
-**Proceso:**
-1. Generar 100 variaciones sintéticas
-2. Ejecutar backtest de estrategia en cada serie
-3. Analizar distribución de resultados (Sharpe, drawdown, etc.)
+**Process:**
+1. Generate 100 synthetic variations
+2. Run strategy backtest on each series
+3. Analyze distribution of results (Sharpe, drawdown, etc.)
 
-**Output esperado:**
-- 100 series sintéticas validadas
-- Distribución de métricas de performance
-- Identificación de escenarios extremos
+**Expected output:**
+- 100 validated synthetic series
+- Distribution of performance metrics
+- Identification of extreme scenarios
 
 ---
 
-### Caso 2: Data Augmentation para ML
+### Case 2: Data Augmentation for ML
 
-**Objetivo:** Aumentar dataset de entrenamiento para modelo de ML
+**Objective:** Increase training dataset for ML model
 
 **Input:**
-- Dataset histórico: 1 año de datos de 1-minuto de BTC
-- Generación: 1000 series sintéticas
-- Fidelidad mínima: 92%
+- Historical dataset: 1 year of 1-minute BTC data
+- Generation: 1000 synthetic series
+- Minimum fidelity: 92%
 
-**Proceso:**
-1. Generar 1000 series sintéticas
-2. Combinar con datos originales
-3. Entrenar modelo en dataset aumentado
-4. Validar en datos reales (hold-out)
+**Process:**
+1. Generate 1000 synthetic series
+2. Combine with original data
+3. Train model on augmented dataset
+4. Validate on real data (hold-out)
 
-**Output esperado:**
-- Dataset aumentado 1000x
-- Mejora en generalización del modelo
-- Reducción de overfitting
+**Expected output:**
+- 1000x augmented dataset
+- Improved model generalization
+- Reduced overfitting
 
 ---
 
-### Caso 3: Análisis de Riesgo de Cola
+### Case 3: Tail Risk Analysis
 
-**Objetivo:** Estimar drawdown máximo en escenarios extremos
+**Objective:** Estimate maximum drawdown in extreme scenarios
 
 **Input:**
-- Dataset histórico: 10 años de datos diarios de portafolio
-- Generación: 10000 series sintéticas
-- Fidelidad mínima: 88%
+- Historical dataset: 10 years of daily portfolio data
+- Generation: 10000 synthetic series
+- Minimum fidelity: 88%
 
-**Proceso:**
-1. Generar 10000 escenarios alternativos
-2. Calcular drawdown máximo de cada serie
-3. Analizar percentil 1% (peor caso)
+**Process:**
+1. Generate 10000 alternative scenarios
+2. Calculate maximum drawdown of each series
+3. Analyze 1% percentile (worst case)
 
-**Output esperado:**
-- Distribución de drawdowns
-- Estimación de VaR (Value at Risk)
-- Identificación de escenarios de stress
+**Expected output:**
+- Drawdown distribution
+- VaR (Value at Risk) estimation
+- Stress scenario identification
 
 ---
 
-## Métricas de Validación Incluidas
+## Included Validation Metrics
 
-Cada serie sintética generada incluye un reporte de métricas comparativas:
+Each generated synthetic series includes a comparative metrics report:
 
-**Ejemplo de métricas calculadas:**
+**Example of calculated metrics:**
 ```json
 {
   "original": {
@@ -200,35 +200,35 @@ Cada serie sintética generada incluye un reporte de métricas comparativas:
 
 ---
 
-## Consideraciones de Rendimiento
+## Performance Considerations
 
-### Tiempos Estimados
+### Estimated Times
 
-- **Datos diarios (1000 barras)**: 1-3 segundos por serie
-- **Datos horarios (10000 barras)**: 5-15 segundos por serie
-- **Datos de 1-minuto (100000 barras)**: 30-120 segundos por serie
+- **Daily data (1000 bars)**: 1-3 seconds per series
+- **Hourly data (10000 bars)**: 5-15 seconds per series
+- **1-minute data (100000 bars)**: 30-120 seconds per series
 
-### Factores que Afectan Rendimiento
+### Factors Affecting Performance
 
-- Longitud del dataset original
-- Frecuencia de los datos
-- Umbral de fidelidad requerido (más alto = más intentos)
-- Número de series solicitadas
+- Original dataset length
+- Data frequency
+- Required fidelity threshold (higher = more attempts)
+- Number of requested series
 
 ---
 
-## Limitaciones y Recomendaciones
+## Limitations and Recommendations
 
-### Limitaciones
+### Limitations
 
-- Requiere datos continuos (sin gaps grandes)
-- Funciona mejor con datos estacionarios
-- Rendimiento degrada con datasets muy grandes (>500k barras)
+- Requires continuous data (no large gaps)
+- Works better with stationary data
+- Performance degrades with very large datasets (>500k bars)
 
-### Recomendaciones
+### Recommendations
 
-- Usar datos limpios y validados
-- Para datasets grandes, considerar muestreo previo
-- Ajustar `min_fidelity` según necesidad (90-95% típico)
-- Para producción, usar procesamiento en background
+- Use clean and validated data
+- For large datasets, consider prior sampling
+- Adjust `min_fidelity` according to need (90-95% typical)
+- For production, use background processing
 

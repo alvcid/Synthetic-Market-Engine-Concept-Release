@@ -1,46 +1,46 @@
 # Synthetic Market Engine – Concept Release
 
-**Motor de generación de datos sintéticos para Machine Learning de Producción en mercados financieros**
+**Synthetic data generation engine for Production Machine Learning in financial markets**
 
-Sistema de generación de series temporales sintéticas OHLCV que preserva propiedades estadísticas reales mediante técnicas avanzadas de bootstrapping. Diseñado para validación de estrategias cuantitativas, entrenamiento de modelos ML y análisis de riesgo.
-
----
-
-## Descripción
-
-Herramienta de producción para generar escenarios alternativos de mercado que mantienen las dependencias estadísticas complejas de los datos históricos. Permite crear miles de variaciones sintéticas para stress-testing, data augmentation y estimación de riesgos de cola sin exponer lógica propietaria.
+OHLCV synthetic time series generation system that preserves real statistical properties through advanced bootstrapping techniques. Designed for quantitative strategy validation, ML model training, and risk analysis.
 
 ---
 
-## Características Principales
+## Description
 
-- **Generación de datos sintéticos de alta fidelidad**: Produce series OHLCV indistinguibles estadísticamente de datos reales
-- **Preservación de propiedades estilizadas**: Mantiene autocorrelación, clustering de volatilidad, fat tails y estructura temporal
-- **Pipeline de validación automática**: Sistema de scoring que garantiza calidad mínima mediante rejection sampling
-- **API REST y frontend web**: Interfaz completa para carga, generación y descarga de datasets
-- **Métricas estadísticas integradas**: Validación automática con 15+ métricas (Hurst, ARCH, Ljung-Box, etc.)
-- **Procesamiento en background**: Generación asíncrona con seguimiento de progreso en tiempo real
+Production tool to generate alternative market scenarios that maintain the complex statistical dependencies of historical data. Allows creating thousands of synthetic variations for stress-testing, data augmentation, and tail risk estimation without exposing proprietary logic.
 
 ---
 
-## Arquitectura / Diseño Conceptual
+## Main Features
 
-### Componentes del Sistema
+- **High-fidelity synthetic data generation**: Produces OHLCV series statistically indistinguishable from real data
+- **Stylized properties preservation**: Maintains autocorrelation, volatility clustering, fat tails, and temporal structure
+- **Automatic validation pipeline**: Scoring system that guarantees minimum quality through rejection sampling
+- **REST API and web frontend**: Complete interface for loading, generation, and dataset download
+- **Integrated statistical metrics**: Automatic validation with 15+ metrics (Hurst, ARCH, Ljung-Box, etc.)
+- **Background processing**: Asynchronous generation with real-time progress tracking
+
+---
+
+## Architecture / Conceptual Design
+
+### System Components
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    FRONTEND (React)                         │
-│  - Dashboard de visualización                              │
-│  - Carga de archivos CSV                                   │
-│  - Monitoreo de progreso                                   │
-│  - Descarga de resultados                                  │
+│  - Visualization dashboard                                 │
+│  - CSV file upload                                         │
+│  - Progress monitoring                                      │
+│  - Results download                                        │
 └──────────────────────┬──────────────────────────────────────┘
                        │ HTTP/REST
 ┌──────────────────────▼──────────────────────────────────────┐
 │                 BACKEND API (FastAPI)                       │
-│  - Endpoints de carga y generación                         │
-│  - Gestión de jobs asíncronos                              │
-│  - Cálculo de métricas                                     │
+│  - Upload and generation endpoints                          │
+│  - Asynchronous job management                             │
+│  - Metrics calculation                                     │
 └──────────────────────┬──────────────────────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────────────────────┐
@@ -48,73 +48,73 @@ Herramienta de producción para generar escenarios alternativos de mercado que m
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐  │
 │  │ 1. PREPROCESSING MODULE                             │  │
-│  │    - Normalización de columnas                      │  │
-│  │    - Conversión a log-returns                       │  │
-│  │    - Extracción de ratios OHLC                     │  │
-│  │    - Cálculo de block size óptimo                  │  │
+│  │    - Column normalization                           │  │
+│  │    - Conversion to log-returns                       │  │
+│  │    - OHLC ratio extraction                          │  │
+│  │    - Optimal block size calculation                 │  │
 │  └─────────────────────────────────────────────────────┘  │
 │                       │                                     │
 │  ┌─────────────────────▼─────────────────────────────────┐ │
 │  │ 2. GENERATION ENGINE                                  │ │
 │  │    - Hybrid Block Bootstrap                          │ │
-│  │    - Sampling de bloques aleatorios                 │ │
-│  │    - Reconstrucción de paths de precio              │ │
+│  │    - Random block sampling                           │ │
+│  │    - Price path reconstruction                      │ │
 │  └──────────────────────────────────────────────────────┘ │
 │                       │                                     │
 │  ┌─────────────────────▼─────────────────────────────────┐ │
 │  │ 3. VALIDATION MODULE                                  │ │
-│  │    - Cálculo de métricas estadísticas                │ │
-│  │    - Comparación con datos originales               │ │
-│  │    - Scoring de fidelidad                           │ │
+│  │    - Statistical metrics calculation                 │ │
+│  │    - Comparison with original data                   │ │
+│  │    - Fidelity scoring                                │ │
 │  └──────────────────────────────────────────────────────┘ │
 │                       │                                     │
 │  ┌─────────────────────▼─────────────────────────────────┐ │
 │  │ 4. REJECTION SAMPLING                                 │ │
-│  │    - Filtrado por umbral mínimo                     │ │
-│  │    - Reintentos automáticos                          │ │
-│  │    - Retorno de candidatos válidos                  │ │
+│  │    - Filtering by minimum threshold                  │ │
+│  │    - Automatic retries                               │ │
+│  │    - Return of valid candidates                      │ │
 │  └──────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Flujo de Procesamiento (Pipeline MLdP)
+### Processing Flow (MLdP Pipeline)
 
-1. **Ingestión de Datos**
-   - Carga de CSV con validación de formato
-   - Normalización automática de columnas
-   - Limpieza y preprocesamiento
+1. **Data Ingestion**
+   - CSV loading with format validation
+   - Automatic column normalization
+   - Cleaning and preprocessing
 
-2. **Análisis y Configuración**
-   - Cálculo de métricas base del dataset original
-   - Determinación de parámetros óptimos (block size)
-   - Preparación de estructuras de datos
+2. **Analysis and Configuration**
+   - Base metrics calculation of original dataset
+   - Optimal parameter determination (block size)
+   - Data structure preparation
 
-3. **Generación de Candidatos**
-   - Sampling de bloques contiguos
-   - Ensamblado de series sintéticas
-   - Reconstrucción de OHLCV
+3. **Candidate Generation**
+   - Contiguous block sampling
+   - Synthetic series assembly
+   - OHLCV reconstruction
 
-4. **Validación Estadística**
-   - Cálculo de 15+ métricas por candidato
-   - Comparación con métricas originales
-   - Scoring de similitud ponderado
+4. **Statistical Validation**
+   - 15+ metrics calculation per candidate
+   - Comparison with original metrics
+   - Weighted similarity scoring
 
-5. **Filtrado y Salida**
-   - Rejection sampling por umbral
-   - Exportación a CSV/Excel
-   - Agregación en archivos ZIP
+5. **Filtering and Output**
+   - Rejection sampling by threshold
+   - Export to CSV/Excel
+   - Aggregation in ZIP files
 
 ---
 
-## Ejemplos de Entrada/Salida (I/O)
+## Input/Output Examples (I/O)
 
-### Entrada Esperada
+### Expected Input
 
-**Formato CSV con columnas:**
+**CSV format with columns:**
 - `Open`, `High`, `Low`, `Close`, `Volume`
-- Opcional: `Date`, `Time`, `DateTime`
+- Optional: `Date`, `Time`, `DateTime`
 
-**Ejemplo de datos de entrada:**
+**Input data example:**
 ```
 Date,Open,High,Low,Close,Volume
 2024-01-01,1.2500,1.2550,1.2480,1.2520,1500000
@@ -122,38 +122,38 @@ Date,Open,High,Low,Close,Volume
 ...
 ```
 
-### Salida Generada
+### Generated Output
 
-**Múltiples series sintéticas en formato:**
-- CSV individual por serie
-- Excel (XLSX) por serie
-- Archivos ZIP con batches completos
+**Multiple synthetic series in format:**
+- Individual CSV per series
+- Excel (XLSX) per series
+- ZIP files with complete batches
 
-**Estructura de salida:**
+**Output structure:**
 ```
 synthetic_1_batch_xxx.csv
 synthetic_2_batch_xxx.csv
 ...
-synthetic_batch_xxx.zip (todos los CSV)
-synthetic_batch_xxx_xlsx.zip (todos los XLSX)
+synthetic_batch_xxx.zip (all CSVs)
+synthetic_batch_xxx_xlsx.zip (all XLSX)
 ```
 
-### Pseudocódigo de Uso
+### Usage Pseudocode
 
 ```python
-# Pseudocódigo conceptual - NO código real
+# Conceptual pseudocode - NOT real code
 
-# 1. Inicialización
+# 1. Initialization
 factory = SyntheticDataFactory(input_dataframe)
-# Sistema calcula automáticamente parámetros óptimos
+# System automatically calculates optimal parameters
 
-# 2. Generación con validación
+# 2. Generation with validation
 synthetic_series = factory.generate(
-    n_samples=10,           # Número de series a generar
-    min_fidelity=95.0      # Umbral de calidad mínimo (%)
+    n_samples=10,           # Number of series to generate
+    min_fidelity=95.0      # Minimum quality threshold (%)
 )
 
-# 3. Proceso interno (simplificado)
+# 3. Internal process (simplified)
 for each requested sample:
     attempts = 0
     while attempts < max_attempts:
@@ -171,40 +171,40 @@ for each requested sample:
     if no_valid_candidate_found:
         raise_error()
 
-# 4. Resultado
-# synthetic_series contiene N DataFrames válidos
+# 4. Result
+# synthetic_series contains N valid DataFrames
 ```
 
 ---
 
-## Pseudocódigo Seguro del Pipeline
+## Safe Pipeline Pseudocode
 
-### Módulo de Preprocesamiento
+### Preprocessing Module
 
 ```python
 def preprocess_data(raw_dataframe):
-    # Normalización de columnas
+    # Column normalization
     normalized_df = normalize_column_names(raw_dataframe)
     
-    # Conversión a formato estacionario
+    # Conversion to stationary format
     log_returns = calculate_log_returns(normalized_df['Close'])
     relative_ratios = extract_ohlc_ratios(normalized_df)
     
-    # Configuración de parámetros
+    # Parameter configuration
     optimal_block_size = calculate_optimal_block_size(data_length)
     
     return preprocessed_components, optimal_block_size
 ```
 
-### Motor de Generación
+### Generation Engine
 
 ```python
 def generate_candidate(preprocessed_data, block_size):
-    # Sampling de bloques
+    # Block sampling
     number_of_blocks = calculate_required_blocks(data_length, block_size)
     random_start_indices = sample_random_indices(number_of_blocks)
     
-    # Ensamblado de bloques
+    # Block assembly
     synthetic_returns = []
     synthetic_ratios = []
     
@@ -213,7 +213,7 @@ def generate_candidate(preprocessed_data, block_size):
         synthetic_returns.append(block.returns)
         synthetic_ratios.append(block.ratios)
     
-    # Reconstrucción
+    # Reconstruction
     synthetic_series = reconstruct_ohlcv(
         synthetic_returns, 
         synthetic_ratios, 
@@ -223,35 +223,35 @@ def generate_candidate(preprocessed_data, block_size):
     return synthetic_series
 ```
 
-### Módulo de Validación
+### Validation Module
 
 ```python
 def validate_candidate(candidate_series, original_metrics):
-    # Cálculo de métricas del candidato
+    # Candidate metrics calculation
     candidate_metrics = calculate_metrics(candidate_series)
     
-    # Comparación ponderada
+    # Weighted comparison
     fidelity_score = weighted_similarity_score(
         original_metrics, 
         candidate_metrics
     )
     
-    # Decisión
+    # Decision
     if fidelity_score >= threshold:
         return ACCEPT, fidelity_score
     else:
         return REJECT, fidelity_score
 ```
 
-### Pipeline Principal
+### Main Pipeline
 
 ```python
 def generate_synthetic_data(input_data, n_samples, min_fidelity):
-    # Fase 1: Preprocesamiento
+    # Phase 1: Preprocessing
     preprocessed, config = preprocess_data(input_data)
     original_metrics = calculate_metrics(input_data)
     
-    # Fase 2: Generación con validación
+    # Phase 2: Generation with validation
     valid_samples = []
     
     while len(valid_samples) < n_samples:
@@ -261,7 +261,7 @@ def generate_synthetic_data(input_data, n_samples, min_fidelity):
         if decision == ACCEPT:
             valid_samples.append(candidate)
         else:
-            # Rejection sampling: descartar y reintentar
+            # Rejection sampling: discard and retry
             continue
     
     return valid_samples
@@ -269,126 +269,126 @@ def generate_synthetic_data(input_data, n_samples, min_fidelity):
 
 ---
 
-## Métricas Finales
+## Final Metrics
 
-El sistema calcula y valida las siguientes métricas estadísticas:
+The system calculates and validates the following statistical metrics:
 
-| Métrica | Descripción | Peso en Scoring |
-|---------|-------------|-----------------|
-| **Volatilidad** | Desviación estándar de returns | 3.0x |
-| **Skewness** | Asimetría de distribución | 2.0x |
-| **Kurtosis** | Colas de distribución | 2.0x |
-| **Max Drawdown** | Máxima caída desde peak | 1.5x |
-| **ACF Lag-1** | Autocorrelación de primer orden | 1.0x |
-| **ACF Sum (10)** | Estructura autocorrelacional | 2.0x |
-| **Vol Clustering** | Clustering de volatilidad | 3.0x |
-| **Hurst Exponent** | Memoria de largo plazo | 2.0x |
-| **Ljung-Box (p)** | Test de ruido blanco | 1.0x |
-| **ARCH LM (p)** | Test de heteroscedasticidad | 1.0x |
-| **RSI Correlation** | Coherencia con indicadores | 2.0x |
-| **Vol Persistence** | Persistencia de regímenes | 2.0x |
+| Metric | Description | Weight in Scoring |
+|--------|-------------|-------------------|
+| **Volatility** | Standard deviation of returns | 3.0x |
+| **Skewness** | Distribution asymmetry | 2.0x |
+| **Kurtosis** | Distribution tails | 2.0x |
+| **Max Drawdown** | Maximum drop from peak | 1.5x |
+| **ACF Lag-1** | First-order autocorrelation | 1.0x |
+| **ACF Sum (10)** | Autocorrelation structure | 2.0x |
+| **Vol Clustering** | Volatility clustering | 3.0x |
+| **Hurst Exponent** | Long-term memory | 2.0x |
+| **Ljung-Box (p)** | White noise test | 1.0x |
+| **ARCH LM (p)** | Heteroscedasticity test | 1.0x |
+| **RSI Correlation** | Coherence with indicators | 2.0x |
+| **Vol Persistence** | Regime persistence | 2.0x |
 
-**Fidelidad Típica**: 90-98% en datasets de calidad
-**Tiempo de Generación**: 1-5 segundos por serie (datos diarios), 1-3 minutos (datos de alta frecuencia)
+**Typical Fidelity**: 90-98% on quality datasets  
+**Generation Time**: 1-5 seconds per series (daily data), 1-3 minutes (high-frequency data)
 
 ---
 
 ## Roadmap
 
-### Fase 1: Optimizaciones Actuales
-- [ ] Paralelización de generación de candidatos
-- [ ] Caché de métricas precalculadas
-- [ ] Soporte para múltiples timeframes simultáneos
+### Phase 1: Current Optimizations
+- [ ] Parallelization of candidate generation
+- [ ] Precalculated metrics cache
+- [ ] Support for multiple simultaneous timeframes
 
-### Fase 2: Extensiones de Modelado
-- [ ] Incorporación de modelos GARCH/ARCH
-- [ ] Soporte para datos multi-activo (correlaciones)
-- [ ] Generación condicionada a regímenes de mercado
+### Phase 2: Modeling Extensions
+- [ ] Incorporation of GARCH/ARCH models
+- [ ] Multi-asset data support (correlations)
+- [ ] Market regime-conditioned generation
 
-### Fase 3: Integración ML
-- [ ] API para pipelines de ML automatizados
-- [ ] Integración con frameworks de backtesting
-- [ ] Exportación a formatos de ML (TFRecord, Parquet)
+### Phase 3: ML Integration
+- [ ] API for automated ML pipelines
+- [ ] Integration with backtesting frameworks
+- [ ] Export to ML formats (TFRecord, Parquet)
 
-### Fase 4: Escalabilidad
-- [ ] Distribución en cluster (Spark/Dask)
-- [ ] Generación en streaming para datasets masivos
-- [ ] Optimización de memoria para series ultra-largas
+### Phase 4: Scalability
+- [ ] Cluster distribution (Spark/Dask)
+- [ ] Streaming generation for massive datasets
+- [ ] Memory optimization for ultra-long series
 
 ---
 
-## Estructura de Carpetas Recomendada para GitHub
+## Recommended Folder Structure for GitHub
 
 ```
 project/
-├── README.md                 # Este archivo
-├── LICENSE                   # Licencia (MIT/Apache)
-├── .gitignore               # Exclusiones estándar
+├── README.md                 # This file
+├── LICENSE                   # License (MIT/Apache)
+├── .gitignore               # Standard exclusions
 │
-├── src/                     # Código fuente (NO incluido en repo público)
-│   ├── core/               # Motor de generación
+├── src/                     # Source code (NOT included in public repo)
+│   ├── core/               # Generation engine
 │   │   ├── preprocessing.py
 │   │   ├── generator.py
 │   │   └── validator.py
-│   ├── api/                # Endpoints REST
-│   └── utils/              # Utilidades
+│   ├── api/                # REST endpoints
+│   └── utils/              # Utilities
 │
-├── notebooks/              # Jupyter notebooks de ejemplo
+├── notebooks/              # Example Jupyter notebooks
 │   ├── 01_basic_usage.ipynb
 │   ├── 02_validation_metrics.ipynb
 │   └── 03_ml_integration.ipynb
 │
-├── examples/               # Scripts de ejemplo (pseudocódigo)
+├── examples/               # Example scripts (pseudocode)
 │   ├── basic_generation.py
 │   └── batch_processing.py
 │
-├── tests/                  # Tests unitarios (sin lógica privada)
+├── tests/                  # Unit tests (without private logic)
 │   ├── test_preprocessing.py
 │   └── test_metrics.py
 │
-├── docs/                   # Documentación adicional
+├── docs/                   # Additional documentation
 │   ├── architecture.md
 │   ├── api_reference.md
 │   └── methodology.md
 │
-└── data/                    # Datasets de ejemplo (sintéticos)
+└── data/                    # Example datasets (synthetic)
     └── sample_ohlcv.csv
 ```
 
-**Nota**: Los archivos en `src/` contienen implementación propietaria y NO deben incluirse en el repositorio público.
+**Note**: Files in `src/` contain proprietary implementation and should NOT be included in the public repository.
 
 ---
 
-## Sección Legal
+## Legal Section
 
 **Note: This repository contains conceptual components only. Full implementation is proprietary to TradeAndRoll.**
 
-Este repositorio presenta la arquitectura, metodología y documentación conceptual del sistema. La implementación completa, algoritmos específicos, heurísticas y fórmulas propietarias son propiedad exclusiva de TradeAndRoll y no están incluidas en este repositorio público.
+This repository presents the architecture, methodology, and conceptual documentation of the system. The complete implementation, specific algorithms, heuristics, and proprietary formulas are the exclusive property of TradeAndRoll and are not included in this public repository.
 
 ---
 
-## Resumen Ejecutivo Técnico
+## Technical Executive Summary
 
-**Synthetic Market Engine** es un sistema de producción para generación de datos sintéticos financieros que implementa un pipeline completo de Machine Learning de Producción (MLdP). El sistema combina técnicas de bootstrapping avanzadas con validación estadística rigurosa para producir series temporales sintéticas que preservan las propiedades estilizadas de los mercados reales.
+**Synthetic Market Engine** is a production system for generating synthetic financial data that implements a complete Production Machine Learning (MLdP) pipeline. The system combines advanced bootstrapping techniques with rigorous statistical validation to produce synthetic time series that preserve the stylized properties of real markets.
 
-**Aplicaciones principales:**
-- Stress-testing de estrategias cuantitativas
-- Data augmentation para modelos de ML
-- Estimación de riesgos de cola mediante Monte Carlo
-- Validación de robustez de parámetros
+**Main applications:**
+- Stress-testing of quantitative strategies
+- Data augmentation for ML models
+- Tail risk estimation through Monte Carlo
+- Parameter robustness validation
 
-**Ventajas técnicas:**
-- Model-free: No asume distribuciones específicas
-- Preserva dependencias temporales complejas
-- Validación automática con múltiples métricas
-- Escalable a datasets de alta frecuencia
+**Technical advantages:**
+- Model-free: Does not assume specific distributions
+- Preserves complex temporal dependencies
+- Automatic validation with multiple metrics
+- Scalable to high-frequency datasets
 
 ---
 
-## Contacto y Contribuciones
+## Contact and Contributions
 
-Para consultas sobre metodología o colaboraciones, contactar a través de los canales oficiales del proyecto.
+For methodology inquiries or collaborations, contact through the project's official channels.
 
-**Versión**: Concept Release v1.0
-**Última actualización**: 2024
+**Version**: Concept Release v1.0  
+**Last update**: 2024
 

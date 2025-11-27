@@ -1,166 +1,166 @@
-# Resumen Ejecutivo Técnico
+# Technical Executive Summary
 
 ## Synthetic Market Engine – Concept Release
 
 ---
 
-## ¿Qué es?
+## What is it?
 
-Sistema de producción para generación de datos sintéticos financieros que implementa un pipeline completo de Machine Learning de Producción (MLdP). Combina técnicas avanzadas de bootstrapping con validación estadística rigurosa para producir series temporales OHLCV sintéticas que preservan propiedades estilizadas de mercados reales.
-
----
-
-## ¿Qué hace?
-
-### Funcionalidades Principales
-
-1. **Genera series sintéticas de alta fidelidad**
-   - Preserva autocorrelación, clustering de volatilidad, fat tails
-   - Mantiene estructura temporal y coherencia estadística
-
-2. **Valida calidad automáticamente**
-   - Calcula 15+ métricas estadísticas por candidato
-   - Scoring de fidelidad ponderado (0-100%)
-   - Rejection sampling estricto
-
-3. **Procesa en producción**
-   - API REST para integración
-   - Frontend web para uso interactivo
-   - Procesamiento asíncrono en background
+Production system for generating synthetic financial data that implements a complete Production Machine Learning (MLdP) pipeline. Combines advanced bootstrapping techniques with rigorous statistical validation to produce synthetic OHLCV time series that preserve stylized properties of real markets.
 
 ---
 
-## Pipeline MLdP
+## What does it do?
 
-### Etapas del Proceso
+### Main Functionalities
+
+1. **Generates high-fidelity synthetic series**
+   - Preserves autocorrelation, volatility clustering, fat tails
+   - Maintains temporal structure and statistical coherence
+
+2. **Automatically validates quality**
+   - Calculates 15+ statistical metrics per candidate
+   - Weighted fidelity scoring (0-100%)
+   - Strict rejection sampling
+
+3. **Processes in production**
+   - REST API for integration
+   - Web frontend for interactive use
+   - Asynchronous background processing
+
+---
+
+## MLdP Pipeline
+
+### Process Stages
 
 ```
 [CSV Input] 
     ↓
-[Validación y Normalización]
+[Validation and Normalization]
     ↓
-[Preprocesamiento]
+[Preprocessing]
     ├─ Log Returns
-    ├─ Ratios OHLC
-    ├─ Métricas Base
-    └─ Configuración Óptima
+    ├─ OHLC Ratios
+    ├─ Base Metrics
+    └─ Optimal Configuration
     ↓
-[Generación de Candidatos]
+[Candidate Generation]
     ├─ Hybrid Block Bootstrap
-    ├─ Sampling de Bloques
-    └─ Reconstrucción OHLCV
+    ├─ Block Sampling
+    └─ OHLCV Reconstruction
     ↓
-[Validación Estadística]
-    ├─ Cálculo de 15+ Métricas
-    ├─ Comparación con Original
-    └─ Scoring de Fidelidad
+[Statistical Validation]
+    ├─ 15+ Metrics Calculation
+    ├─ Comparison with Original
+    └─ Fidelity Scoring
     ↓
 [Rejection Sampling]
-    ├─ Filtrado por Umbral
-    └─ Acumulación de Válidos
+    ├─ Threshold Filtering
+    └─ Valid Sample Accumulation
     ↓
-[Exportación]
-    ├─ CSV/Excel Individual
+[Export]
+    ├─ Individual CSV/Excel
     └─ ZIP Batches
 ```
 
 ---
 
-## Aplicaciones
+## Applications
 
-### 1. Stress-Testing de Estrategias
-- Genera miles de escenarios alternativos
-- Valida robustez de estrategias cuantitativas
-- Identifica dependencias de datos históricos específicos
+### 1. Strategy Stress-Testing
+- Generates thousands of alternative scenarios
+- Validates robustness of quantitative strategies
+- Identifies dependencies on specific historical data
 
-### 2. Data Augmentation para ML
-- Aumenta datasets de entrenamiento
-- Mejora generalización de modelos
-- Reduce overfitting
+### 2. Data Augmentation for ML
+- Increases training datasets
+- Improves model generalization
+- Reduces overfitting
 
-### 3. Análisis de Riesgo
-- Estimación de VaR mediante Monte Carlo
-- Análisis de drawdowns extremos
-- Identificación de escenarios de stress
-
----
-
-## Métricas de Calidad
-
-### Fidelidad Típica
-- **90-98%** en datasets de calidad
-- Validación con 15+ métricas estadísticas
-
-### Rendimiento
-- **Datos diarios**: 1-3 seg/serie
-- **Datos horarios**: 5-15 seg/serie
-- **Datos 1-min**: 30-120 seg/serie
+### 3. Risk Analysis
+- VaR estimation through Monte Carlo
+- Extreme drawdown analysis
+- Stress scenario identification
 
 ---
 
-## Ventajas Técnicas
+## Quality Metrics
 
-✅ **Model-free**: No asume distribuciones específicas  
-✅ **Preserva dependencias**: Mantiene estructura temporal compleja  
-✅ **Validación automática**: Múltiples métricas integradas  
-✅ **Escalable**: Diseñado para datasets de alta frecuencia  
-✅ **Producción-ready**: API REST y procesamiento asíncrono  
+### Typical Fidelity
+- **90-98%** on quality datasets
+- Validation with 15+ statistical metrics
+
+### Performance
+- **Daily data**: 1-3 sec/series
+- **Hourly data**: 5-15 sec/series
+- **1-min data**: 30-120 sec/series
 
 ---
 
-## Arquitectura
+## Technical Advantages
 
-### Componentes
+✅ **Model-free**: Does not assume specific distributions  
+✅ **Preserves dependencies**: Maintains complex temporal structure  
+✅ **Automatic validation**: Multiple integrated metrics  
+✅ **Scalable**: Designed for high-frequency datasets  
+✅ **Production-ready**: REST API and asynchronous processing  
 
-- **Frontend (React)**: Dashboard interactivo
-- **Backend API (FastAPI)**: Endpoints REST y gestión de jobs
-- **Core Engine**: Motor de generación y validación
-- **Validation Module**: Cálculo de métricas estadísticas
+---
 
-### Tecnologías
+## Architecture
+
+### Components
+
+- **Frontend (React)**: Interactive dashboard
+- **Backend API (FastAPI)**: REST endpoints and job management
+- **Core Engine**: Generation and validation engine
+- **Validation Module**: Statistical metrics calculation
+
+### Technologies
 
 - Python (FastAPI, Pandas, NumPy, SciPy)
 - React (Frontend)
-- Estadística: ACF, ARCH, Ljung-Box, Hurst
+- Statistics: ACF, ARCH, Ljung-Box, Hurst
 
 ---
 
 ## Roadmap
 
-### Corto Plazo
-- Paralelización de generación
-- Optimización de memoria
-- Soporte multi-timeframe
+### Short Term
+- Generation parallelization
+- Memory optimization
+- Multi-timeframe support
 
-### Medio Plazo
-- Modelos GARCH/ARCH
-- Datos multi-activo
-- Generación condicionada
+### Medium Term
+- GARCH/ARCH models
+- Multi-asset data
+- Conditioned generation
 
-### Largo Plazo
-- Distribución en cluster
-- Streaming para datasets masivos
-- Integración con frameworks ML
+### Long Term
+- Cluster distribution
+- Streaming for massive datasets
+- ML framework integration
 
 ---
 
-## Nota Legal
+## Legal Notice
 
 **Note: This repository contains conceptual components only. Full implementation is proprietary to TradeAndRoll.**
 
-Este repositorio presenta arquitectura, metodología y documentación conceptual. La implementación completa, algoritmos específicos y fórmulas propietarias son propiedad exclusiva de TradeAndRoll.
+This repository presents architecture, methodology, and conceptual documentation. The complete implementation, specific algorithms, and proprietary formulas are the exclusive property of TradeAndRoll.
 
 ---
 
-## Documentación Completa
+## Complete Documentation
 
-- **README.md**: Documentación principal
-- **ARCHITECTURE.md**: Arquitectura detallada del pipeline
-- **PSEUDOCODE.md**: Pseudocódigo explicativo
-- **EXAMPLES.md**: Ejemplos de entrada/salida y casos de uso
+- **README.md**: Main documentation
+- **ARCHITECTURE.md**: Detailed pipeline architecture
+- **PSEUDOCODE.md**: Explanatory pseudocode
+- **EXAMPLES.md**: Input/output examples and use cases
 
 ---
 
-**Versión**: Concept Release v1.0  
-**Última actualización**: 2024
+**Version**: Concept Release v1.0  
+**Last update**: 2024
 
